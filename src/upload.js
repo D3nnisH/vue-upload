@@ -658,6 +658,12 @@ module.exports = function () {
         _process.call(__upload.instances[name]);
     }; 
 
+    Upload.prototype.queue = function (name, file) {
+        _create(name);
+
+        _queue.call(__upload.instances[name], file);
+    };
+
     Upload.prototype.files = function (name) {
         _create(name);
 
