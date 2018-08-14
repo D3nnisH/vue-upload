@@ -568,7 +568,7 @@ module.exports = function () {
         if (!_valid.call(this, file)) {
             _move.call(this, file, 'error');
             file.percentComplete = 100;
-            
+
             this.onError(file);
 
             _process.call(this);
@@ -592,17 +592,21 @@ module.exports = function () {
 
         _move.call(this, file, 'progress');
 
+        // sirius-web expects the whole request body to be one single file and does not understand multipart/form-data
+        /*
         formData = new FormData();
-                
+
         formData.append(this.options.name, file.$file);
-        
-        for (key in file.body) {
+
+        for (var key in file.body) {
             formData.append(key, file.body[key]);
         }
+        */
 
         request = this.options.http({
+            name: file.name,
             url: file.url,
-            body: formData,
+            body: file.$file,
             progress: function (e) {
                 file.percentComplete = e.lengthComputable ? Math.ceil(e.loaded / e.total * 100) : 0;
 
@@ -618,9 +622,14 @@ module.exports = function () {
             },
 
             success: function (res) {
+                if (res.data.error || !res.data.success) {
+                    onError(res);
+                    return;
+                }
+
                 file.sending = false;
                 file.percentComplete = 100;
-                
+
                 _move.call(_this, file, 'success');
 
                 _this.onSuccess(file, res);
@@ -631,34 +640,36 @@ module.exports = function () {
                 }
             },
 
-            error: function (res) {
-                var error;
-
-                if (!_this.$vm) {
-                    return;
-                }
-
-                file.sending = false;
-                file.percentComplete = 100;
-
-                error = _this.options.parseErrors(res);
-                error.file = file;
-                error.permanent = false;
-
-                _addError.call(_this, error);
-                
-                _move.call(_this, file, 'error');
-
-                _this.onError(file, res);
-                _this.onComplete(file, res);
-
-                if (_this.options.continueOnComplete) {
-                    _process.call(_this);
-                }
-            }
+            error: onError
         });
 
         file.$request = request;
+
+        function onError(res) {
+            var error;
+
+            if (!_this.$vm) {
+                return;
+            }
+
+            file.sending = false;
+            file.percentComplete = 100;
+
+            error = _this.options.parseErrors(res);
+            error.file = file;
+            error.permanent = false;
+
+            _addError.call(_this, error);
+
+            _move.call(_this, file, 'error');
+
+            _this.onError(file, res);
+            _this.onComplete(file, res);
+
+            if (_this.options.continueOnComplete) {
+                _process.call(_this);
+            }
+        }
     }
 
     function _percent() {
