@@ -169,6 +169,7 @@ module.exports = function () {
 
     function _initInput() {
         var input,
+            nested = false,
             _this = this;
 
         input = document.createElement('input');
@@ -180,11 +181,18 @@ module.exports = function () {
         input.style.display = 'none';
         
         input.onchange = function () {
+            if (nested) {
+                // IE11 calls this recursively when setting input.value = null;
+                return;
+            }
+
             // create copy because input field will be reset afterwards
             var files = Array.prototype.slice.call(input.files);
             _select.call(_this, files);
 
+            nested = true;
             input.value = null;
+            nested = false;
         };
 
         document.body.appendChild(input);
