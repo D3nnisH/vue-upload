@@ -209,11 +209,11 @@ module.exports = function () {
 
         if (dropzone.$el) {
             dropzone.dragenter = function(e) {
-                __stop(e);
-
                 if (!__containsFiles(e)) {
                     return;
                 }
+
+                __stop(e);
 
                 _this.dropzone.counter++;
                 
@@ -221,23 +221,23 @@ module.exports = function () {
             };
 
             dropzone.dragover = function(e) {
-                __stop(e);
-
                 if (!__containsFiles(e)) {
                     return;
                 }
 
-                e.dataTransfer.dropEffect = 'copy'; 
-                
+                __stop(e);
+
+                e.dataTransfer.dropEffect = 'copy';
+
                 _this.$vm.dropzone.active = true;
             };
 
             dropzone.dragleave = function(e) {
-                __stop(e);
-
                 if (!__containsFiles(e)) {
                     return;
                 }
+
+                __stop(e);
 
                 _this.dropzone.counter--;
 
@@ -247,11 +247,11 @@ module.exports = function () {
             };
 
             dropzone.drop = function(e) {
-                __stop(e);
-
                 if (!__containsFiles(e)) {
                     return;
                 }
+
+                __stop(e);
 
                 _this.$vm.dropzone.active = false;
 
