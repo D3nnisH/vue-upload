@@ -84,7 +84,7 @@ module.exports = function () {
             },
 
             dropzone: {
-                active: false
+                active: 0
             }
         });
 
@@ -120,7 +120,7 @@ module.exports = function () {
 
         this.$vm.meta.percentComplete = 0;
 
-        this.$vm.dropzone.active = false;
+        this.$vm.dropzone.active = 0;
     }
 
     function _init(name, $ctx, options) {
@@ -216,8 +216,8 @@ module.exports = function () {
                 __stop(e);
 
                 _this.dropzone.counter++;
-                
-                _this.$vm.dropzone.active = true;
+
+                _this.$vm.dropzone.active = e.dataTransfer.items ? e.dataTransfer.items.length : (e.dataTransfer.files.length || 1);
             };
 
             dropzone.dragover = function(e) {
@@ -229,7 +229,7 @@ module.exports = function () {
 
                 e.dataTransfer.dropEffect = 'copy';
 
-                _this.$vm.dropzone.active = true;
+                _this.$vm.dropzone.active = e.dataTransfer.items ? e.dataTransfer.items.length : (e.dataTransfer.files.length || 1);
             };
 
             dropzone.dragleave = function(e) {
@@ -242,7 +242,7 @@ module.exports = function () {
                 _this.dropzone.counter--;
 
                 if (_this.dropzone.counter === 0) {
-                    _this.$vm.dropzone.active = false;
+                    _this.$vm.dropzone.active = 0;
                 }
             };
 
@@ -253,7 +253,7 @@ module.exports = function () {
 
                 __stop(e);
 
-                _this.$vm.dropzone.active = false;
+                _this.$vm.dropzone.active = 0;
 
                 _select.call(_this, e.dataTransfer.files);
             };
