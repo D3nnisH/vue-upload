@@ -526,6 +526,7 @@ module.exports = function () {
 
         if (!_valid.call(this, file)) {
             _move.call(this, file, 'error');
+            file.percentComplete = 100;
             
             this.onError(file);
 
@@ -577,6 +578,7 @@ module.exports = function () {
 
             success: function (res) {
                 file.sending = false;
+                file.percentComplete = 100;
                 
                 _move.call(_this, file, 'success');
 
@@ -590,6 +592,7 @@ module.exports = function () {
                 var error;
 
                 file.sending = false;
+                file.percentComplete = 100;
 
                 error = _this.options.parseErrors(res);
                 error.file = file;
