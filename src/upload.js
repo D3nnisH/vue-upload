@@ -7,6 +7,7 @@ module.exports = function () {
         name: 'file',
         body: {},
         dropzoneId: null,
+        onBeforeSelect: null,
         onSelect: null,
         onStart: null,
         onQueue: null,
@@ -136,6 +137,9 @@ module.exports = function () {
     }
 
     function _bind($ctx) {
+        this.onBeforeSelect = this.options.onBeforeSelect ? this.options.onBeforeSelect.bind($ctx) : function () {
+            return new Promise(function(resolve, reject) { resolve(); });
+        };
         this.onSelect = this.options.onSelect ? this.options.onSelect.bind($ctx) : function () {};
         this.onStart = this.options.onStart ? this.options.onStart.bind($ctx) : function () {};
         this.onQueue = this.options.onQueue ? this.options.onQueue.bind($ctx) : function () {};
@@ -176,7 +180,9 @@ module.exports = function () {
         input.style.display = 'none';
         
         input.onchange = function () {
-            _select.call(_this, input.files);
+            // create copy because input field will be reset afterwards
+            var files = Array.prototype.slice.call(input.files);
+            _select.call(_this, files);
 
             input.value = null;
         };
@@ -354,10 +360,8 @@ module.exports = function () {
         this.$vm.files.all.splice(index, 1);
     }
 
-    function _select(files) {
-        var i, ii,
-            error,
-            _this = this;
+    function _select(files, skipBeforeSelectListener) {
+        var _this = this;
 
         if (files.length > this.options.maxFilesSelect) {
             _addError.call(this, {
@@ -378,6 +382,20 @@ module.exports = function () {
 
             return;
         }
+
+        if (!skipBeforeSelectListener) {
+            this.onBeforeSelect(files).then(function () {
+                _continueSelect.call(_this, files);
+            });
+        }
+        else {
+            _continueSelect.call(_this, files);
+        }
+    }
+
+    function _continueSelect(files) {
+        var i, ii,
+            _this = this;
 
         this.onSelect(files);
 
@@ -681,10 +699,10 @@ module.exports = function () {
         _process.call(__upload.instances[name]);
     }; 
 
-    Upload.prototype.queue = function (name, file) {
+    Upload.prototype.selectFiles = function (name, files, skipBeforeSelectListener) {
         _create(name);
 
-        _queue.call(__upload.instances[name], file);
+        _select.call(__upload.instances[name], files, skipBeforeSelectListener);
     };
 
     Upload.prototype.files = function (name) {
