@@ -665,6 +665,25 @@ module.exports = function () {
         this.$vm.meta.percentComplete = Math.ceil(percentComplete / (totalFilesActive * 100) * 100);
     }
 
+    function _retry(file) {
+        // get the original object
+        var index = _index.call(this, file);
+        var file = this.$vm.files[file.state][index];
+
+        if (file && !file.sending) {
+            _move.call(this, file, 'queue');
+            file.$request = null;
+            file.errors = [];
+            file.error = {};
+            file.percentComplete = 0;
+        }
+    }
+
+    function _remove(file) {
+        this.$vm.files[file.state].splice(_index.call(this, file), 1);
+        this.$vm.files.all.splice(_index.call(this, file, 'all'), 1);
+    }
+
     function Upload(Vue, options) {
         this.options = Object.assign({}, __defaultOptions, options);
 
@@ -711,7 +730,19 @@ module.exports = function () {
         _create(name);
 
         _process.call(__upload.instances[name]);
-    }; 
+    };
+
+    Upload.prototype.retry = function (name, file) {
+        _create(name);
+
+        _retry.call(__upload.instances[name], file);
+    };
+
+    Upload.prototype.remove = function (name, file) {
+        _create(name);
+
+        _remove.call(__upload.instances[name], file);
+    };
 
     Upload.prototype.selectFiles = function (name, files, skipBeforeSelectListener) {
         _create(name);
