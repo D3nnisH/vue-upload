@@ -354,7 +354,7 @@ module.exports = function () {
         }
 
         // Clear errors from global stack.
-        for (i = 0, ii = this.$vm.errors.length; i < ii; i++) {
+        for (i = this.$vm.errors.length - 1; i >= 0; i--) {
             if (this.$vm.errors[i].file && this.$vm.errors[i].file.$id === file.$id) {
                 this.$vm.errors.splice(i, 1);
             }
