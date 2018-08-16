@@ -18,6 +18,7 @@ module.exports = function () {
         onComplete: null,
         onEnd: null,
         startOnSelect: true,
+        continueOnComplete: true,
         extensions: ['jpeg', 'jpg', 'png', 'gif'],
         multiple: false,
         maxFilesSelect: 4,
@@ -612,7 +613,9 @@ module.exports = function () {
                 _this.onSuccess(file, res);
                 _this.onComplete(file, res);
 
-                _process.call(_this);
+                if (_this.options.continueOnComplete) {
+                    _process.call(_this);
+                }
             },
 
             error: function (res) {
@@ -631,7 +634,9 @@ module.exports = function () {
                 _this.onError(file, res);
                 _this.onComplete(file, res);
 
-                _process.call(_this);
+                if (_this.options.continueOnComplete) {
+                    _process.call(_this);
+                }
             }
         });
 
