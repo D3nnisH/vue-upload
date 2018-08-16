@@ -668,10 +668,21 @@ module.exports = function () {
     function _retry(file) {
         // get the original object
         var index = _index.call(this, file);
-        var file = this.$vm.files[file.state][index];
+        file = this.$vm.files[file.state][index];
 
         if (file && !file.sending) {
-            _move.call(this, file, 'queue');
+            // calculate new position in the queue based on the position in the 'all' list
+            var queueIndex = _index.call(this, file, 'all');
+            for (var i = 0; i < queueIndex; i++) {
+                if (_index.call(this, this.$vm.files.all[i], 'queue') < 0) {
+                    queueIndex --;
+                }
+            }
+
+            this.$vm.files[file.state].splice(index, 1);
+            this.$vm.files.queue.splice(queueIndex, 0, file);
+
+            file.state = 'queue';
             file.$request = null;
             file.errors = [];
             file.error = {};
