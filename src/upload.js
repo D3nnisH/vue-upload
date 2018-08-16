@@ -444,6 +444,7 @@ module.exports = function () {
             type: type,
             extension: extension,
             state: 'queue',
+            timestamp: new Date().getTime(),
             active: true, // to keep track of which files are in active download set which gets reset onEnd / complete.
             sending: false,
             errors: [],
