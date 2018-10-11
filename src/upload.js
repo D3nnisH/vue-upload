@@ -623,6 +623,10 @@ module.exports = function () {
             error: function (res) {
                 var error;
 
+                if (!_this.$vm) {
+                    return;
+                }
+
                 file.sending = false;
                 file.percentComplete = 100;
 
@@ -649,6 +653,10 @@ module.exports = function () {
         var i, ii,
             percentComplete,
             totalFilesActive;
+
+        if (!this.$vm) {
+            return;
+        }
 
         totalFilesActive = 0;
         
