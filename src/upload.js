@@ -314,6 +314,7 @@ module.exports = function () {
 
         error.$id = __randomId();
         error.file = error.file || null;
+        error.permanent = error.permanent || false;
         error.clear = _clearError.bind(this, error);
 
         if (error.file) {
@@ -376,6 +377,7 @@ module.exports = function () {
             _addError.call(this, {
                 unique: true,
                 code: 'file-max-select',
+                permanent: true,
                 msg: this.options.maxFilesSelectMsg.replace('{max}', this.options.maxFilesSelect)
             });
 
@@ -510,6 +512,7 @@ module.exports = function () {
             error = {
                 file: file,
                 code: 'file-extension',
+                permanent: true,
                 msg: this.options.invalidExtensionMsg.replace('{extensions}', this.options.extensions.join(', '))
             };
         }
@@ -518,6 +521,7 @@ module.exports = function () {
             error = {
                 file: file,
                 code: 'file-max-size',
+                permanent: true,
                 msg: this.options.maxFileSizeMsg.replace('{max}', Math.floor(this.options.maxSizePerFile / 1024 / 1024))
             };
         }
@@ -639,6 +643,7 @@ module.exports = function () {
 
                 error = _this.options.parseErrors(res);
                 error.file = file;
+                error.permanent = false;
 
                 _addError.call(_this, error);
                 
