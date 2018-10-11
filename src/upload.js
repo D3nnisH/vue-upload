@@ -465,7 +465,14 @@ module.exports = function () {
         this.$vm.files.all.push(file);
         this.$vm.files.queue.push(file);
 
-        this.onQueue(file);
+        if (!_valid.call(this, file)) {
+            _move.call(this, file, 'error');
+            file.percentComplete = 100;
+
+            this.onError(file);
+        } else {
+            this.onQueue(file);
+        }
     }
 
     function _index(file, queue) {
